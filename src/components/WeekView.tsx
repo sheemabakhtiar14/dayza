@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { format, addDays, startOfWeek } from 'date-fns';
-import { Search, Plus, Check, MoreVertical, Trash2 } from 'lucide-react';
+import { Search, Plus, Check, MoreVertical, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { DayOfWeek, Task } from '../types';
 import { cn } from '../lib/utils';
@@ -34,6 +34,7 @@ export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void })
   }, [allTasks, completionState, selectedDayName, selectedDate]);
 
   const toggleTaskCompletion = useStore(state => state.toggleTaskCompletion);
+  const toggleSubtaskCompletion = useStore(state => state.toggleSubtaskCompletion);
   const deleteTask = useStore(state => state.deleteTask);
 
   const completedCount = tasks.filter(t => t.completed).length;
@@ -128,12 +129,13 @@ export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void })
               <p className="text-gray-500 text-sm">No tasks scheduled for {selectedDayName}.</p>
             </div>
           ) : (
-            <AnimatePresence>
+            <AnimatePresence initial={false}>
               {tasks.map(task => (
                 <WeekTaskCard 
                   key={task.id} 
                   task={task} 
                   onToggle={() => toggleTaskCompletion(task.id, selectedDate)}
+                  onToggleSubtask={(subtaskId) => toggleSubtaskCompletion(task.id, subtaskId, selectedDate)}
                   onDelete={() => deleteTask(task.id)}
                 />
               ))}
@@ -142,31 +144,20 @@ export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void })
         </div>
       </div>
 
-      <div className="mt-8 bg-gradient-to-br from-[#1a1a24] to-[#121214] border border-indigo-500/20 rounded-3xl p-6 relative overflow-hidden">
-        <div className="relative z-10">
-          <h3 className="text-lg font-bold mb-2">Weekly Goal</h3>
-          <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-            Complete the "Zen Workspace" UI component library and finalize client feedback loop.
-          </p>
-          <div className="flex items-center gap-2 text-sm text-emerald-400 font-medium">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-            12 tasks completed of 15 planned
-          </div>
-        </div>
-        
-        <button 
-          onClick={() => onAddTask(selectedDayName)}
-          className="absolute bottom-6 right-6 w-12 h-12 bg-indigo-500 hover:bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 transition-transform active:scale-95 z-20"
-        >
-          <Plus size={24} className="text-white" />
-        </button>
-      </div>
+      <button 
+        onClick={() => onAddTask(selectedDayName)}
+        className="fixed bottom-24 right-6 w-14 h-14 bg-indigo-500 hover:bg-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 transition-transform active:scale-95 z-40"
+      >
+        <Plus size={24} className="text-white" />
+      </button>
     </div>
   );
 }
 
-function WeekTaskCard({ task, onToggle, onDelete }: { task: Task, onToggle: () => void, onDelete: () => void }) {
+function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete }: { task: Task, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const hasSubtasks = task.subtasks && task.subtasks.length > 0;
 
   return (
     <motion.div 
@@ -175,65 +166,113 @@ function WeekTaskCard({ task, onToggle, onDelete }: { task: Task, onToggle: () =
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={cn(
-        "flex items-center gap-4 p-4 rounded-2xl border transition-colors relative",
+        "rounded-2xl p-4 transition-all border relative",
         task.completed 
           ? "bg-gray-900/30 border-gray-800/50" 
           : "bg-[#121214] border-gray-800"
       )}
     >
-      <button 
-        onClick={onToggle}
-        className={cn(
-          "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0",
-          task.completed 
-            ? "bg-emerald-500 border-emerald-500 text-white" 
-            : "border-gray-500 text-transparent hover:border-gray-400"
-        )}
-      >
-        <Check size={14} />
-      </button>
-      
-      <div className="flex-1 min-w-0">
-        <h4 className={cn(
-          "font-medium truncate transition-colors",
-          task.completed ? "text-gray-500 line-through" : "text-white"
-        )}>
-          {task.title}
-        </h4>
-        {(task.startTime || task.priority) && (
-          <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-            {task.startTime && <span>{task.startTime}</span>}
-            {task.startTime && task.priority && <span>•</span>}
-            {task.priority && <span className="uppercase tracking-wider">{task.priority}</span>}
-          </div>
-        )}
-      </div>
-      
-      <div className="relative">
+      <div className="flex items-start gap-4">
         <button 
-          onClick={() => setShowMenu(!showMenu)}
-          className="text-gray-600 hover:text-white p-1"
+          onClick={onToggle}
+          className={cn(
+            "mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0",
+            task.completed 
+              ? "bg-emerald-500 border-emerald-500 text-white" 
+              : "border-gray-500 text-transparent hover:border-gray-400"
+          )}
         >
-          <MoreVertical size={18} />
+          <Check size={14} />
         </button>
-        {showMenu && (
-          <>
-            <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-            <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32">
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start">
+            <h4 className={cn(
+              "font-medium truncate transition-colors",
+              task.completed ? "text-gray-500 line-through" : "text-white"
+            )}>
+              {task.title}
+            </h4>
+            
+            <div className="flex items-center gap-2 shrink-0 relative">
+              {hasSubtasks && (
+                <button 
+                  onClick={() => setExpanded(!expanded)}
+                  className="text-gray-400 hover:text-white p-1"
+                >
+                  {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+              )}
               <button 
-                onClick={() => {
-                  onDelete();
-                  setShowMenu(false);
-                }}
-                className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2"
+                onClick={() => setShowMenu(!showMenu)}
+                className="text-gray-600 hover:text-white p-1"
               >
-                <Trash2 size={16} />
-                Delete
+                <MoreVertical size={18} />
               </button>
+              {showMenu && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                  <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32">
+                    <button 
+                      onClick={() => {
+                        onDelete();
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
-          </>
-        )}
+          </div>
+          
+          {(task.startTime || task.priority) && (
+            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+              {task.startTime && <span>{task.startTime}</span>}
+              {task.startTime && task.priority && <span>•</span>}
+              {task.priority && <span className="uppercase tracking-wider">{task.priority}</span>}
+            </div>
+          )}
+        </div>
       </div>
+
+      <AnimatePresence>
+        {hasSubtasks && expanded && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-4 pl-10 space-y-3">
+              {task.subtasks.map(subtask => (
+                <div key={subtask.id} className="flex items-start gap-3">
+                  <button 
+                    onClick={() => onToggleSubtask(subtask.id)}
+                    className={cn(
+                      "mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
+                      subtask.completed 
+                        ? "bg-emerald-500 border-emerald-500 text-white" 
+                        : "border-gray-600 text-transparent hover:border-gray-400"
+                    )}
+                  >
+                    <Check size={10} />
+                  </button>
+                  <span className={cn(
+                    "text-sm transition-colors",
+                    subtask.completed ? "text-gray-500 line-through" : "text-gray-300"
+                  )}>
+                    {subtask.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

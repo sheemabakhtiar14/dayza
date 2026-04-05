@@ -88,7 +88,7 @@ export function TodayView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void }
             </button>
           </div>
         ) : (
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {tasks.map(task => (
               <TaskCard 
                 key={task.id} 

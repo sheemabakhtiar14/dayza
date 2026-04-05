@@ -37,13 +37,18 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
   const handleSave = () => {
     if (!title.trim()) return;
     
+    const finalSubtasks = [...subtasks];
+    if (newSubtask.trim()) {
+      finalSubtasks.push({ id: crypto.randomUUID(), title: newSubtask.trim() });
+    }
+    
     addTask({
       title: title.trim(),
       description: description.trim() || undefined,
       duration: duration.trim() || undefined,
       priority,
       day,
-      subtasks: subtasks.map(st => ({ ...st, completed: false }))
+      subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
     });
     
     // Reset form
@@ -172,6 +177,17 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
                     onKeyDown={handleAddSubtask}
                     className="flex-1 bg-transparent text-sm text-white placeholder:text-gray-600 outline-none"
                   />
+                  {newSubtask.trim() && (
+                    <button 
+                      onClick={() => {
+                        setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim() }]);
+                        setNewSubtask('');
+                      }}
+                      className="text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-wider px-2 py-1"
+                    >
+                      Add
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
