@@ -78,6 +78,8 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
               </div>
             </div>
           </div>
+          
+          <Dialog.Title className="sr-only">Add New Task</Dialog.Title>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-8">
             <div>
