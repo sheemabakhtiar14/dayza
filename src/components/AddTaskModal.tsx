@@ -1,0 +1,227 @@
+import React, { useState } from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { X, Clock, AlertCircle, Plus, Check } from 'lucide-react';
+import { DayOfWeek, Task, Subtask } from '../types';
+import { useStore } from '../store/useStore';
+import { cn } from '../lib/utils';
+
+interface AddTaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialDay?: DayOfWeek;
+}
+
+export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTaskModalProps) {
+  const addTask = useStore(state => state.addTask);
+  
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [duration, setDuration] = useState('');
+  const [priority, setPriority] = useState<Task['priority']>('Medium');
+  const [day, setDay] = useState<DayOfWeek>(initialDay);
+  const [subtasks, setSubtasks] = useState<{ id: string, title: string }[]>([]);
+  const [newSubtask, setNewSubtask] = useState('');
+
+  const handleAddSubtask = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && newSubtask.trim()) {
+      e.preventDefault();
+      setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim() }]);
+      setNewSubtask('');
+    }
+  };
+
+  const removeSubtask = (id: string) => {
+    setSubtasks(subtasks.filter(st => st.id !== id));
+  };
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+    
+    addTask({
+      title: title.trim(),
+      description: description.trim() || undefined,
+      duration: duration.trim() || undefined,
+      priority,
+      day,
+      subtasks: subtasks.map(st => ({ ...st, completed: false }))
+    });
+    
+    // Reset form
+    setTitle('');
+    setDescription('');
+    setDuration('');
+    setPriority('Medium');
+    setSubtasks([]);
+    setNewSubtask('');
+    onClose();
+  };
+
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed inset-0 md:inset-auto md:left-[50%] md:top-[50%] md:-translate-x-[50%] md:-translate-y-[50%] md:w-full md:max-w-md md:h-auto md:max-h-[85vh] h-full bg-[#09090b] md:rounded-[32px] md:border border-gray-800 z-50 flex flex-col overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]">
+          
+          <div className="flex items-center justify-between p-6 border-b border-gray-800/50">
+            <div className="flex items-center gap-3">
+              <Dialog.Close asChild>
+                <button className="text-gray-400 hover:text-white transition-colors">
+                  <X size={24} />
+                </button>
+              </Dialog.Close>
+              <span className="font-medium">dayo</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              Draft
+              <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs">
+                D
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-6 space-y-8">
+            <div>
+              <h2 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">NEW INTENT</h2>
+              <input 
+                type="text" 
+                placeholder="Craft your task"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full bg-transparent text-3xl font-bold text-white placeholder:text-gray-600 outline-none"
+                autoFocus
+              />
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800 focus-within:border-gray-600 transition-colors">
+                <Clock className="text-gray-500" size={20} />
+                <div className="flex-1">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">DURATION</label>
+                  <input 
+                    type="text" 
+                    placeholder="Add time (e.g. 45m)"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full bg-transparent text-white placeholder:text-gray-600 outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800">
+                <AlertCircle className="text-indigo-400" size={20} />
+                <div className="flex-1">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">PRIORITY</label>
+                  <select 
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value as Task['priority'])}
+                    className="w-full bg-transparent text-white outline-none text-sm appearance-none"
+                  >
+                    <option value="Low" className="bg-gray-900">Low Resonance</option>
+                    <option value="Medium" className="bg-gray-900">Medium Resonance</option>
+                    <option value="High Resonance" className="bg-gray-900">High Resonance</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800">
+                <CalendarIcon className="text-gray-500" size={20} />
+                <div className="flex-1">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">DAY</label>
+                  <select 
+                    value={day}
+                    onChange={(e) => setDay(e.target.value as DayOfWeek)}
+                    className="w-full bg-transparent text-white outline-none text-sm appearance-none"
+                  >
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => (
+                      <option key={d} value={d} className="bg-gray-900">{d}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-xs font-bold tracking-widest text-gray-500 uppercase">BREAKDOWN STEPS</h3>
+                <span className="text-xs text-gray-600">0 / {subtasks.length} Complete</span>
+              </div>
+              
+              <div className="space-y-2">
+                {subtasks.map(st => (
+                  <div key={st.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#121214] border border-gray-800 group">
+                    <div className="w-4 h-4 rounded border border-gray-600 flex-shrink-0" />
+                    <span className="flex-1 text-sm text-gray-300">{st.title}</span>
+                    <button 
+                      onClick={() => removeSubtask(st.id)}
+                      className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+                
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-[#121214]/50 border border-gray-800 border-dashed focus-within:border-gray-600 transition-colors">
+                  <Plus className="text-gray-600" size={16} />
+                  <input 
+                    type="text" 
+                    placeholder="Add a sub-intent..."
+                    value={newSubtask}
+                    onChange={(e) => setNewSubtask(e.target.value)}
+                    onKeyDown={handleAddSubtask}
+                    className="flex-1 bg-transparent text-sm text-white placeholder:text-gray-600 outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">CONTEXT & NUANCE</h3>
+              <textarea 
+                placeholder="Write down any thoughts to clear your headspace..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full h-32 bg-[#121214] border border-gray-800 rounded-2xl p-4 text-sm text-white placeholder:text-gray-600 outline-none focus:border-gray-600 transition-colors resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="p-6 border-t border-gray-800/50 bg-[#09090b]">
+            <button 
+              onClick={handleSave}
+              disabled={!title.trim()}
+              className="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-500/50 disabled:text-white/50 text-white py-4 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <Check size={20} />
+              Commit to {day}
+            </button>
+            <p className="text-center text-[10px] font-bold tracking-widest text-gray-600 uppercase mt-4">
+              PRESS ENTER TO SAVE INSTANTLY
+            </p>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+function CalendarIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+      <line x1="16" x2="16" y1="2" y2="6" />
+      <line x1="8" x2="8" y1="2" y2="6" />
+      <line x1="3" x2="21" y1="10" y2="10" />
+    </svg>
+  )
+}
