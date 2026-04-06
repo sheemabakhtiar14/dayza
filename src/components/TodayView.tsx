@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
-import { Search, Plus, Check, ChevronDown, ChevronUp, MoreVertical, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Check, ChevronDown, ChevronUp, MoreVertical, Trash2, Edit2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { DayOfWeek, Task } from '../types';
 import { cn } from '../lib/utils';
@@ -47,9 +47,6 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
           </div>
           <span className="font-medium text-gray-200">dayza</span>
         </div>
-        <button className="text-gray-400 hover:text-white transition-colors">
-          <Search size={20} />
-        </button>
       </header>
 
       <div className="mb-8">
@@ -107,9 +104,9 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
       {tasks.length > 0 && (
         <button 
           onClick={() => onAddTask(currentDayName)}
-          className="fixed bottom-28 right-6 w-14 h-14 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
+          className="fixed bottom-32 right-6 w-16 h-16 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
         >
-          <Plus size={24} className="text-white" />
+          <Plus size={28} className="text-white" />
         </button>
       )}
     </div>
@@ -207,7 +204,12 @@ function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete, onEdit }: {
               {task.duration && <span>{task.duration}</span>}
               {task.priority && (
                 <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400"></span>
+                  <span className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    task.priority === 'High' ? 'bg-red-500' : 
+                    task.priority === 'Medium' ? 'bg-amber-500' : 
+                    'bg-emerald-500'
+                  )}></span>
                   {task.priority}
                 </span>
               )}

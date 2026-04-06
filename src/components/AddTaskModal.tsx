@@ -157,9 +157,9 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
                     onChange={(e) => setPriority(e.target.value as Task['priority'])}
                     className="w-full bg-transparent text-white outline-none text-sm appearance-none"
                   >
-                    <option value="Low" className="bg-gray-900">Low Resonance</option>
-                    <option value="Medium" className="bg-gray-900">Medium Resonance</option>
-                    <option value="High Resonance" className="bg-gray-900">High Resonance</option>
+                    <option value="Low" className="bg-gray-900">Low</option>
+                    <option value="Medium" className="bg-gray-900">Medium</option>
+                    <option value="High" className="bg-gray-900">High</option>
                   </select>
                 </div>
               </div>
@@ -254,9 +254,6 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
               <Check size={20} />
               {existingTask ? 'Save Changes' : `Commit to ${day}`}
             </button>
-            <p className="text-center text-[10px] font-bold tracking-widest text-gray-600 uppercase mt-4">
-              PRESS ENTER TO SAVE INSTANTLY
-            </p>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

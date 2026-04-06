@@ -12,7 +12,7 @@ export interface Task {
   description?: string;
   startTime?: string; // e.g., "09:00 AM"
   duration?: string; // e.g., "45m"
-  priority?: 'Low' | 'Medium' | 'High Resonance';
+  priority?: 'Low' | 'Medium' | 'High';
   completed: boolean;
   subtasks: Subtask[];
   day: DayOfWeek;
