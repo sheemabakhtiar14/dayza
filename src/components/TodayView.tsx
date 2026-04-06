@@ -103,18 +103,23 @@ export function TodayView({
           </div>
         ) : (
           <div className="space-y-4">
-            {tasks.map((task) => (
-              <TaskCard
+            {tasks.map((task, index) => (
+              <div
                 key={task.id}
-                task={task}
-                date={currentDate}
-                onToggle={() => toggleTaskCompletion(task.id, currentDate)}
-                onToggleSubtask={(subtaskId) =>
-                  toggleSubtaskCompletion(task.id, subtaskId, currentDate)
-                }
-                onDelete={() => deleteTask(task.id)}
-                onEdit={() => onEditTask(task)}
-              />
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <TaskCard
+                  task={task}
+                  date={currentDate}
+                  onToggle={() => toggleTaskCompletion(task.id, currentDate)}
+                  onToggleSubtask={(subtaskId) =>
+                    toggleSubtaskCompletion(task.id, subtaskId, currentDate)
+                  }
+                  onDelete={() => deleteTask(task.id)}
+                  onEdit={() => onEditTask(task)}
+                />
+              </div>
             ))}
           </div>
         )}

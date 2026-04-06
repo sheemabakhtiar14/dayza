@@ -151,17 +151,22 @@ export function WeekView({
             </div>
           ) : (
             <div className="space-y-3">
-              {tasks.map((task) => (
-                <WeekTaskCard
+              {tasks.map((task, index) => (
+                <div
                   key={task.id}
-                  task={task}
-                  onToggle={() => toggleTaskCompletion(task.id, selectedDate)}
-                  onToggleSubtask={(subtaskId) =>
-                    toggleSubtaskCompletion(task.id, subtaskId, selectedDate)
-                  }
-                  onDelete={() => deleteTask(task.id)}
-                  onEdit={() => onEditTask(task)}
-                />
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <WeekTaskCard
+                    task={task}
+                    onToggle={() => toggleTaskCompletion(task.id, selectedDate)}
+                    onToggleSubtask={(subtaskId) =>
+                      toggleSubtaskCompletion(task.id, subtaskId, selectedDate)
+                    }
+                    onDelete={() => deleteTask(task.id)}
+                    onEdit={() => onEditTask(task)}
+                  />
+                </div>
               ))}
             </div>
           )}
