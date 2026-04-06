@@ -45,7 +45,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-sm font-bold">
             D
           </div>
-          <span className="font-medium text-gray-200">dayza</span>
+          <span className="text-xl font-semibold text-gray-200 tracking-wide">dayza</span>
         </div>
       </header>
 
@@ -104,7 +104,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
       {tasks.length > 0 && (
         <button 
           onClick={() => onAddTask(currentDayName)}
-          className="fixed bottom-32 right-6 w-16 h-16 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
+          className="fixed bottom-36 right-6 w-16 h-16 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
         >
           <Plus size={28} className="text-white" />
         </button>

@@ -11,11 +11,11 @@ interface LayoutProps {
 export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
   return (
     <div className="flex flex-col h-screen bg-[#09090b] text-white overflow-hidden font-sans">
-      <main className="flex-1 overflow-y-auto pb-32">
+      <main className="flex-1 overflow-y-auto pb-36">
         {children}
       </main>
       
-      <nav className="fixed bottom-4 left-4 right-4 bg-[#121214]/90 backdrop-blur-md border border-white/10 rounded-3xl px-6 py-4 flex justify-between items-center z-50 shadow-2xl">
+      <nav className="fixed bottom-8 left-4 right-4 bg-[#121214]/90 backdrop-blur-md border border-white/10 rounded-3xl px-6 py-4 flex justify-between items-center z-50 shadow-2xl">
         <NavItem 
           icon={<Calendar size={24} />} 
           label="TODAY" 
