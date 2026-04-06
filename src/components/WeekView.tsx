@@ -203,7 +203,6 @@ function WeekTaskCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10, scale: 1, transition: { duration: 0.15 } }}
       transition={{ duration: 0.3 }}
-      layout="position"
       className={cn(
         "rounded-2xl p-4 transition-all border relative",
         task.completed
