@@ -57,7 +57,7 @@ export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void })
           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-bold">
             D
           </div>
-          <span className="font-medium text-gray-200">dayo</span>
+          <span className="font-medium text-gray-200">dayza</span>
         </div>
         <button className="text-gray-400 hover:text-white transition-colors">
           <Search size={20} />

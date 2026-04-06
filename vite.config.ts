@@ -14,8 +14,8 @@ export default defineConfig(({mode}) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
-          name: 'dayo',
-          short_name: 'dayo',
+          name: 'dayza',
+          short_name: 'dayza',
           description: 'A weekly timetable and task manager',
           theme_color: '#09090b',
           background_color: '#09090b',

@@ -74,7 +74,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
                   <X size={24} />
                 </button>
               </Dialog.Close>
-              <span className="font-medium">dayo</span>
+              <span className="font-medium">dayza</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               Draft
