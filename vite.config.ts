@@ -22,16 +22,22 @@ export default defineConfig(({ mode }) => {
           display: "standalone",
           icons: [
             {
-              src: "dayza-logo.png",
-              sizes: "192x192",
+              src: "apple-touch-icon.png",
+              sizes: "180x180",
               type: "image/png",
-              purpose: "any",
+              purpose: "maskable any",
             },
             {
-              src: "dayza-logo.png",
+              src: "apple-touch-icon.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "maskable any",
+            },
+            {
+              src: "apple-touch-icon.png",
               sizes: "512x512",
               type: "image/png",
-              purpose: "any",
+              purpose: "maskable any",
             },
           ],
         },
