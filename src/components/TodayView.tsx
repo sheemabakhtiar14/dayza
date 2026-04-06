@@ -102,7 +102,7 @@ export function TodayView({
             </button>
           </div>
         ) : (
-          <AnimatePresence initial={false}>
+          <div className="space-y-4">
             {tasks.map((task) => (
               <TaskCard
                 key={task.id}
@@ -116,7 +116,7 @@ export function TodayView({
                 onEdit={() => onEditTask(task)}
               />
             ))}
-          </AnimatePresence>
+          </div>
         )}
       </div>
 
@@ -152,11 +152,7 @@ function TaskCard({
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
-      transition={{ duration: 0.3 }}
+    <div
       className={cn(
         "rounded-3xl p-5 transition-all border relative",
         task.completed
@@ -277,44 +273,37 @@ function TaskCard({
         </div>
       </div>
 
-      <AnimatePresence>
-        {hasSubtasks && expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-4 pl-10 space-y-3">
-              {task.subtasks.map((subtask) => (
-                <div key={subtask.id} className="flex items-start gap-3">
-                  <button
-                    onClick={() => onToggleSubtask(subtask.id)}
-                    className={cn(
-                      "mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
-                      subtask.completed
-                        ? "bg-emerald-500 border-emerald-500 text-white"
-                        : "border-gray-600 text-transparent hover:border-gray-400",
-                    )}
-                  >
-                    <Check size={10} />
-                  </button>
-                  <span
-                    className={cn(
-                      "text-sm transition-colors",
-                      subtask.completed
-                        ? "text-gray-500 line-through"
-                        : "text-gray-300",
-                    )}
-                  >
-                    {subtask.title}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      {hasSubtasks && expanded && (
+        <div className="overflow-hidden">
+          <div className="mt-4 pl-10 space-y-3">
+            {task.subtasks.map((subtask) => (
+              <div key={subtask.id} className="flex items-start gap-3">
+                <button
+                  onClick={() => onToggleSubtask(subtask.id)}
+                  className={cn(
+                    "mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
+                    subtask.completed
+                      ? "bg-emerald-500 border-emerald-500 text-white"
+                      : "border-gray-600 text-transparent hover:border-gray-400",
+                  )}
+                >
+                  <Check size={10} />
+                </button>
+                <span
+                  className={cn(
+                    "text-sm transition-colors",
+                    subtask.completed
+                      ? "text-gray-500 line-through"
+                      : "text-gray-300",
+                  )}
+                >
+                  {subtask.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
