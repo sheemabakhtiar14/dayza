@@ -150,7 +150,7 @@ export function WeekView({
               </p>
             </div>
           ) : (
-            <AnimatePresence initial={false} mode="popLayout">
+            <AnimatePresence initial={false}>
               {tasks.map((task) => (
                 <WeekTaskCard
                   key={task.id}

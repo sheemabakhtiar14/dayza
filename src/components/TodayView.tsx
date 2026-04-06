@@ -102,7 +102,7 @@ export function TodayView({
             </button>
           </div>
         ) : (
-          <AnimatePresence initial={false} mode="popLayout">
+          <AnimatePresence initial={false}>
             {tasks.map((task) => (
               <TaskCard
                 key={task.id}
