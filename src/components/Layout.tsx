@@ -51,12 +51,12 @@ function NavItem({ icon, label, isActive, onClick }: { icon: React.ReactNode, la
       onClick={onClick}
       className={cn(
         "flex flex-col items-center gap-1 transition-colors",
-        isActive ? "text-indigo-400" : "text-gray-500 hover:text-gray-300"
+        isActive ? "text-fuchsia-400" : "text-gray-500 hover:text-gray-300"
       )}
     >
       <div className={cn(
         "p-2 rounded-2xl transition-all",
-        isActive ? "bg-indigo-500/20" : "bg-transparent"
+        isActive ? "bg-fuchsia-500/20" : "bg-transparent"
       )}>
         {icon}
       </div>

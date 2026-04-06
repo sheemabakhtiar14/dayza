@@ -42,7 +42,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
     <div className="p-6">
       <header className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-bold">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-sm font-bold">
             D
           </div>
           <span className="font-medium text-gray-200">dayza</span>
@@ -63,7 +63,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
         </div>
         <div className="h-1 w-full bg-gray-800 rounded-full mt-4 overflow-hidden">
           <motion.div 
-            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+            className="h-full bg-gradient-to-r from-purple-600 to-pink-500 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -75,13 +75,13 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
         {tasks.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-24 h-24 bg-gray-800/50 rounded-3xl mx-auto mb-6 flex items-center justify-center">
-              <Check className="text-indigo-400" size={40} />
+              <Check className="text-fuchsia-400" size={40} />
             </div>
             <h3 className="text-2xl font-semibold mb-2">Your day is clear!</h3>
             <p className="text-gray-400 mb-8">The digital sanctuary is quiet. Take a breath or start mapping your next focus.</p>
             <button 
               onClick={() => onAddTask(currentDayName)}
-              className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full font-medium transition-colors flex items-center gap-2 mx-auto"
+              className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white px-6 py-3 rounded-full font-medium transition-colors flex items-center gap-2 mx-auto"
             >
               <Plus size={20} />
               Add your first task
@@ -107,7 +107,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
       {tasks.length > 0 && (
         <button 
           onClick={() => onAddTask(currentDayName)}
-          className="fixed bottom-24 right-6 w-14 h-14 bg-indigo-500 hover:bg-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 transition-transform active:scale-95 z-40"
+          className="fixed bottom-28 right-6 w-14 h-14 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
         >
           <Plus size={24} className="text-white" />
         </button>
@@ -207,7 +207,7 @@ function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete, onEdit }: {
               {task.duration && <span>{task.duration}</span>}
               {task.priority && (
                 <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400"></span>
                   {task.priority}
                 </span>
               )}

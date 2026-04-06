@@ -54,7 +54,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
     <div className="p-6">
       <header className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-bold">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-sm font-bold">
             D
           </div>
           <span className="font-medium text-gray-200">dayza</span>
@@ -81,13 +81,13 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
               className={cn(
                 "flex flex-col items-center justify-center min-w-[72px] h-24 rounded-3xl transition-all snap-center relative",
                 isSelected 
-                  ? "bg-[#1a1a24] border border-indigo-500/30" 
+                  ? "bg-[#1a1a24] border border-fuchsia-500/30" 
                   : "bg-[#121214] border border-gray-800 hover:border-gray-700"
               )}
             >
               <span className={cn(
                 "text-[10px] font-bold tracking-widest uppercase mb-1",
-                isSelected ? "text-indigo-400" : "text-gray-500"
+                isSelected ? "text-fuchsia-400" : "text-gray-500"
               )}>
                 {day.shortName}
               </span>
@@ -98,7 +98,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
                 {day.dayNumber}
               </span>
               {isToday && (
-                <div className="absolute bottom-3 w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                <div className="absolute bottom-3 w-1.5 h-1.5 rounded-full bg-fuchsia-500" />
               )}
             </button>
           );
@@ -108,11 +108,11 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
       <div className="bg-[#121214] border border-gray-800 rounded-3xl p-5 mb-8">
         <div className="flex justify-between items-end mb-3">
           <h3 className="font-medium">{selectedDayName} Progress</h3>
-          <span className="text-indigo-400 font-bold">{progress}%</span>
+          <span className="text-fuchsia-400 font-bold">{progress}%</span>
         </div>
         <div className="h-2 w-full bg-gray-800/50 rounded-full overflow-hidden">
           <motion.div 
-            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+            className="h-full bg-gradient-to-r from-purple-600 to-pink-500 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -147,7 +147,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
 
       <button 
         onClick={() => onAddTask(selectedDayName)}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-indigo-500 hover:bg-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 transition-transform active:scale-95 z-40"
+        className="fixed bottom-28 right-6 w-14 h-14 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
       >
         <Plus size={24} className="text-white" />
       </button>

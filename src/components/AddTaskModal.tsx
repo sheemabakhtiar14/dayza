@@ -105,7 +105,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               {existingTask ? 'Edit Task' : 'Draft'}
-              <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs">
+              <div className="w-6 h-6 rounded-full bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-400 text-xs">
                 {existingTask ? 'E' : 'D'}
               </div>
             </div>
@@ -149,7 +149,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
               </div>
 
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800">
-                <AlertCircle className="text-indigo-400" size={20} />
+                <AlertCircle className="text-fuchsia-400" size={20} />
                 <div className="flex-1">
                   <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">PRIORITY</label>
                   <select 
@@ -225,7 +225,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
                         setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim(), completed: false }]);
                         setNewSubtask('');
                       }}
-                      className="text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-wider px-2 py-1"
+                      className="text-fuchsia-400 hover:text-fuchsia-300 text-xs font-bold uppercase tracking-wider px-2 py-1"
                     >
                       Add
                     </button>
@@ -249,7 +249,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
             <button 
               onClick={handleSave}
               disabled={!title.trim()}
-              className="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-500/50 disabled:text-white/50 text-white py-4 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 disabled:from-purple-600/50 disabled:to-pink-500/50 disabled:text-white/50 text-white py-4 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
             >
               <Check size={20} />
               {existingTask ? 'Save Changes' : `Commit to ${day}`}
