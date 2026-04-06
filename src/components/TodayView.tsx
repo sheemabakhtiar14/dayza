@@ -235,8 +235,8 @@ function TaskCard({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onDelete();
                         setShowMenu(false);
+                        setTimeout(() => onDelete(), 50);
                       }}
                       className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2"
                     >
