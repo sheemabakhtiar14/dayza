@@ -281,7 +281,8 @@ function WeekTaskCard({
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowMenu(false);
-                        setTimeout(() => onDelete(), 50);
+                        // Immediate deletion without setTimeout
+                        onDelete();
                       }}
                       className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2"
                     >
