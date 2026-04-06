@@ -155,7 +155,7 @@ function TaskCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20, scale: 1, transition: { duration: 0.15 } }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
       transition={{ duration: 0.3 }}
       className={cn(
         "rounded-3xl p-5 transition-all border relative",
