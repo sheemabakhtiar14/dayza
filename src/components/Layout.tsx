@@ -10,13 +10,15 @@ interface LayoutProps {
 
 export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
   return (
-    <div className="flex flex-col h-screen bg-[#09090b] text-white overflow-hidden font-sans">
+    <div className="flex flex-col h-screen bg-[#09090b] text-white overflow-hidden font-sans animate-fade-in">
       <header className="flex items-center gap-3 px-6 py-4 border-b border-white/10">
-        <img
-          src="/dayza-logo-calender.png"
-          alt="dayza logo"
-          className="w-8 h-8"
-        />
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden">
+          <img
+            src="/dayza-logo-calender.png"
+            alt="dayza logo"
+            className="w-8 h-8 object-cover"
+          />
+        </div>
         <h1 className="text-xl font-semibold">dayza</h1>
       </header>
       <main className="flex-1 overflow-y-auto pb-36">{children}</main>
