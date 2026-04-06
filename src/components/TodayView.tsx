@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
-import { Search, Plus, Check, ChevronDown, ChevronUp, MoreVertical, Trash2 } from 'lucide-react';
+import { Search, Plus, Check, ChevronDown, ChevronUp, MoreVertical, Trash2, Edit2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { DayOfWeek, Task } from '../types';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import * as Dialog from '@radix-ui/react-dialog';
 
-export function TodayView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void }) {
+export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek) => void, onEditTask: (task: Task) => void }) {
   const [currentDate] = useState(new Date());
   const currentDayName = format(currentDate, 'EEEE') as DayOfWeek;
   
@@ -97,6 +97,7 @@ export function TodayView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void }
                 onToggle={() => toggleTaskCompletion(task.id, currentDate)}
                 onToggleSubtask={(subtaskId) => toggleSubtaskCompletion(task.id, subtaskId, currentDate)}
                 onDelete={() => deleteTask(task.id)}
+                onEdit={() => onEditTask(task)}
               />
             ))}
           </AnimatePresence>
@@ -115,7 +116,7 @@ export function TodayView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void }
   );
 }
 
-function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete }: { task: Task, date: Date, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void }) {
+function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete, onEdit }: { task: Task, date: Date, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void, onEdit: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
@@ -176,6 +177,16 @@ function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete }: { task: T
                   <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32">
                     <button 
                       onClick={() => {
+                        onEdit();
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2"
+                    >
+                      <Edit2 size={16} />
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => {
                         onDelete();
                         setShowMenu(false);
                       }}
@@ -190,10 +201,10 @@ function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete }: { task: T
             </div>
           </div>
           
-          {(task.description || task.startTime || task.priority) && (
+          {(task.description || task.duration || task.priority) && (
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400">
               {task.description && <span className="truncate max-w-full block">{task.description}</span>}
-              {task.startTime && <span>{task.startTime}</span>}
+              {task.duration && <span>{task.duration}</span>}
               {task.priority && (
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>

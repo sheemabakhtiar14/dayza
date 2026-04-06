@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, Clock, AlertCircle, Plus, Check } from 'lucide-react';
 import { DayOfWeek, Task, Subtask } from '../types';
@@ -9,23 +9,46 @@ interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialDay?: DayOfWeek;
+  existingTask?: Task | null;
 }
 
-export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTaskModalProps) {
+export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingTask }: AddTaskModalProps) {
   const addTask = useStore(state => state.addTask);
+  const updateTask = useStore(state => state.updateTask);
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [duration, setDuration] = useState('');
+  const [duration, setDuration] = useState('30m');
   const [priority, setPriority] = useState<Task['priority']>('Medium');
   const [day, setDay] = useState<DayOfWeek>(initialDay);
-  const [subtasks, setSubtasks] = useState<{ id: string, title: string }[]>([]);
+  const [subtasks, setSubtasks] = useState<{ id: string, title: string, completed?: boolean }[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      if (existingTask) {
+        setTitle(existingTask.title);
+        setDescription(existingTask.description || '');
+        setDuration(existingTask.duration || '30m');
+        setPriority(existingTask.priority || 'Medium');
+        setDay(existingTask.day);
+        setSubtasks(existingTask.subtasks || []);
+      } else {
+        setTitle('');
+        setDescription('');
+        setDuration('30m');
+        setPriority('Medium');
+        setDay(initialDay);
+        setSubtasks([]);
+      }
+      setNewSubtask('');
+    }
+  }, [isOpen, existingTask, initialDay]);
 
   const handleAddSubtask = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newSubtask.trim()) {
       e.preventDefault();
-      setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim() }]);
+      setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim(), completed: false }]);
       setNewSubtask('');
     }
   };
@@ -39,25 +62,29 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
     
     const finalSubtasks = [...subtasks];
     if (newSubtask.trim()) {
-      finalSubtasks.push({ id: crypto.randomUUID(), title: newSubtask.trim() });
+      finalSubtasks.push({ id: crypto.randomUUID(), title: newSubtask.trim(), completed: false });
     }
     
-    addTask({
-      title: title.trim(),
-      description: description.trim() || undefined,
-      duration: duration.trim() || undefined,
-      priority,
-      day,
-      subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
-    });
+    if (existingTask) {
+      updateTask(existingTask.id, {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        duration: duration,
+        priority,
+        day,
+        subtasks: finalSubtasks.map(st => ({ ...st, completed: st.completed || false }))
+      });
+    } else {
+      addTask({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        duration: duration,
+        priority,
+        day,
+        subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
+      });
+    }
     
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setDuration('');
-    setPriority('Medium');
-    setSubtasks([]);
-    setNewSubtask('');
     onClose();
   };
 
@@ -77,18 +104,18 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
               <span className="font-medium">dayza</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-400">
-              Draft
+              {existingTask ? 'Edit Task' : 'Draft'}
               <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs">
-                D
+                {existingTask ? 'E' : 'D'}
               </div>
             </div>
           </div>
           
-          <Dialog.Title className="sr-only">Add New Task</Dialog.Title>
+          <Dialog.Title className="sr-only">{existingTask ? 'Edit Task' : 'Add New Task'}</Dialog.Title>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-8">
             <div>
-              <h2 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">NEW INTENT</h2>
+              <h2 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">INTENT</h2>
               <input 
                 type="text" 
                 placeholder="Craft your task"
@@ -104,13 +131,20 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
                 <Clock className="text-gray-500" size={20} />
                 <div className="flex-1">
                   <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">DURATION</label>
-                  <input 
-                    type="text" 
-                    placeholder="Add time (e.g. 45m)"
+                  <select 
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    className="w-full bg-transparent text-white placeholder:text-gray-600 outline-none text-sm"
-                  />
+                    className="w-full bg-transparent text-white outline-none text-sm appearance-none"
+                  >
+                    <option value="15m" className="bg-gray-900">15 minutes</option>
+                    <option value="30m" className="bg-gray-900">30 minutes</option>
+                    <option value="45m" className="bg-gray-900">45 minutes</option>
+                    <option value="1h" className="bg-gray-900">1 hour</option>
+                    <option value="1.5h" className="bg-gray-900">1.5 hours</option>
+                    <option value="2h" className="bg-gray-900">2 hours</option>
+                    <option value="4h" className="bg-gray-900">4 hours</option>
+                    <option value="All Day" className="bg-gray-900">All Day</option>
+                  </select>
                 </div>
               </div>
 
@@ -150,14 +184,22 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
             <div>
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-xs font-bold tracking-widest text-gray-500 uppercase">BREAKDOWN STEPS</h3>
-                <span className="text-xs text-gray-600">0 / {subtasks.length} Complete</span>
+                <span className="text-xs text-gray-600">{subtasks.filter(st => st.completed).length} / {subtasks.length} Complete</span>
               </div>
               
               <div className="space-y-2">
                 {subtasks.map(st => (
                   <div key={st.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#121214] border border-gray-800 group">
-                    <div className="w-4 h-4 rounded border border-gray-600 flex-shrink-0" />
-                    <span className="flex-1 text-sm text-gray-300">{st.title}</span>
+                    <div className={cn(
+                      "w-4 h-4 rounded border flex items-center justify-center flex-shrink-0",
+                      st.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-600"
+                    )}>
+                      {st.completed && <Check size={10} />}
+                    </div>
+                    <span className={cn(
+                      "flex-1 text-sm",
+                      st.completed ? "text-gray-500 line-through" : "text-gray-300"
+                    )}>{st.title}</span>
                     <button 
                       onClick={() => removeSubtask(st.id)}
                       className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -180,7 +222,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
                   {newSubtask.trim() && (
                     <button 
                       onClick={() => {
-                        setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim() }]);
+                        setSubtasks([...subtasks, { id: crypto.randomUUID(), title: newSubtask.trim(), completed: false }]);
                         setNewSubtask('');
                       }}
                       className="text-indigo-400 hover:text-indigo-300 text-xs font-bold uppercase tracking-wider px-2 py-1"
@@ -210,7 +252,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday' }: AddTask
               className="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-500/50 disabled:text-white/50 text-white py-4 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
             >
               <Check size={20} />
-              Commit to {day}
+              {existingTask ? 'Save Changes' : `Commit to ${day}`}
             </button>
             <p className="text-center text-[10px] font-bold tracking-widest text-gray-600 uppercase mt-4">
               PRESS ENTER TO SAVE INSTANTLY

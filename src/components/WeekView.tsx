@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { format, addDays, startOfWeek } from 'date-fns';
-import { Search, Plus, Check, MoreVertical, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Plus, Check, MoreVertical, Trash2, ChevronDown, ChevronUp, Edit2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { DayOfWeek, Task } from '../types';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
-export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void }) {
+export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek) => void, onEditTask: (task: Task) => void }) {
   const [currentDate] = useState(new Date());
   const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
   
@@ -137,6 +137,7 @@ export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void })
                   onToggle={() => toggleTaskCompletion(task.id, selectedDate)}
                   onToggleSubtask={(subtaskId) => toggleSubtaskCompletion(task.id, subtaskId, selectedDate)}
                   onDelete={() => deleteTask(task.id)}
+                  onEdit={() => onEditTask(task)}
                 />
               ))}
             </AnimatePresence>
@@ -154,7 +155,7 @@ export function WeekView({ onAddTask }: { onAddTask: (day: DayOfWeek) => void })
   );
 }
 
-function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete }: { task: Task, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void }) {
+function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete, onEdit }: { task: Task, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void, onEdit: () => void }) {
   const [showMenu, setShowMenu] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
@@ -215,6 +216,16 @@ function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete }: { task: Tas
                   <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32">
                     <button 
                       onClick={() => {
+                        onEdit();
+                        setShowMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2"
+                    >
+                      <Edit2 size={16} />
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => {
                         onDelete();
                         setShowMenu(false);
                       }}
@@ -229,10 +240,10 @@ function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete }: { task: Tas
             </div>
           </div>
           
-          {(task.startTime || task.priority) && (
+          {(task.duration || task.priority) && (
             <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-              {task.startTime && <span>{task.startTime}</span>}
-              {task.startTime && task.priority && <span>•</span>}
+              {task.duration && <span>{task.duration}</span>}
+              {task.duration && task.priority && <span>•</span>}
               {task.priority && <span className="uppercase tracking-wider">{task.priority}</span>}
             </div>
           )}
