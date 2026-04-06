@@ -102,7 +102,7 @@ export function TodayView({
             </button>
           </div>
         ) : (
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode="popLayout">
             {tasks.map((task) => (
               <TaskCard
                 key={task.id}
@@ -156,7 +156,8 @@ function TaskCard({
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.3 }}
       className={cn(
         "rounded-3xl p-5 transition-all border relative",
         task.completed
