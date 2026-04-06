@@ -168,12 +168,14 @@ export function WeekView({
         </div>
       </div>
 
-      <button
-        onClick={() => onAddTask(selectedDayName)}
-        className="fixed bottom-36 right-6 w-16 h-16 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
-      >
-        <Plus size={28} className="text-white" />
-      </button>
+      {tasks.length > 0 && (
+        <button
+          onClick={() => onAddTask(selectedDayName)}
+          className="fixed bottom-36 right-6 w-16 h-16 bg-gradient-to-tr from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 transition-transform active:scale-95 z-40"
+        >
+          <Plus size={28} className="text-white" />
+        </button>
+      )}
     </div>
   );
 }
@@ -246,7 +248,10 @@ function WeekTaskCard({
                 </button>
               )}
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
                 className="text-gray-600 hover:text-white p-1"
               >
                 <MoreVertical size={18} />
@@ -255,11 +260,15 @@ function WeekTaskCard({
                 <>
                   <div
                     className="fixed inset-0 z-10"
-                    onClick={() => setShowMenu(false)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
                   />
-                  <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32">
+                  <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32 min-w-max">
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onEdit();
                         setShowMenu(false);
                       }}
@@ -269,7 +278,8 @@ function WeekTaskCard({
                       Edit
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onDelete();
                         setShowMenu(false);
                       }}

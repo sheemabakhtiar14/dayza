@@ -201,7 +201,10 @@ function TaskCard({
                 </button>
               )}
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
                 className="text-gray-500 hover:text-white p-1"
               >
                 <MoreVertical size={18} />
@@ -211,11 +214,15 @@ function TaskCard({
                 <>
                   <div
                     className="fixed inset-0 z-10"
-                    onClick={() => setShowMenu(false)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
                   />
-                  <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32">
+                  <div className="absolute right-0 top-8 bg-[#1a1a24] border border-gray-800 rounded-xl shadow-xl z-20 overflow-hidden w-32 min-w-max">
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onEdit();
                         setShowMenu(false);
                       }}
@@ -225,7 +232,8 @@ function TaskCard({
                       Edit
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onDelete();
                         setShowMenu(false);
                       }}
