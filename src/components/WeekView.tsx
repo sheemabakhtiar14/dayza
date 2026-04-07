@@ -52,15 +52,6 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
 
   return (
     <div className="p-6">
-      <header className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-sm font-bold">
-            D
-          </div>
-          <span className="text-xl font-semibold text-gray-200 tracking-wide">dayza</span>
-        </div>
-      </header>
-
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Weekly Rhythm</h1>
         <p className="text-gray-400 text-sm">Planning your intentions for the week ahead.</p>

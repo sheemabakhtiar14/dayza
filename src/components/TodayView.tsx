@@ -41,9 +41,11 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
     <div className="p-6">
       <header className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-sm font-bold">
-            D
-          </div>
+          <img 
+            src="/dayza-logo-calender.png" 
+            alt="dayza logo" 
+            className="w-8 h-8 rounded-full object-cover"
+          />
           <span className="text-xl font-semibold text-gray-200 tracking-wide">dayza</span>
         </div>
       </header>
