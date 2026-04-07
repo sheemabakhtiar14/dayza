@@ -232,6 +232,8 @@ export function GoalsView() {
               </div>
             </div>
 
+            <Dialog.Title className="sr-only">{editingGoal ? 'Edit Goal' : 'New Goal'}</Dialog.Title>
+
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               <div>
                 <h2 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">GOAL TITLE</h2>
