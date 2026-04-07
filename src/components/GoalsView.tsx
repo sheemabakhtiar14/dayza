@@ -21,6 +21,7 @@ export function GoalsView() {
   const [description, setDescription] = useState('');
   const [totalUnits, setTotalUnits] = useState(100);
   const [unitName, setUnitName] = useState('units');
+  const [initialCompletedUnits, setInitialCompletedUnits] = useState<number | ''>('');
 
   const openAddModal = () => {
     setEditingGoal(null);
@@ -28,6 +29,7 @@ export function GoalsView() {
     setDescription('');
     setTotalUnits(100);
     setUnitName('units');
+    setInitialCompletedUnits('');
     setIsModalOpen(true);
   };
 
@@ -37,26 +39,25 @@ export function GoalsView() {
     setDescription(goal.description || '');
     setTotalUnits(goal.totalUnits);
     setUnitName(goal.unitName);
+    setInitialCompletedUnits(goal.initialCompletedUnits ?? '');
     setIsModalOpen(true);
   };
 
   const handleSave = () => {
     if (!title.trim()) return;
     
+    const payload = {
+      title: title.trim(),
+      description: description.trim() || undefined,
+      totalUnits,
+      unitName: unitName.trim() || 'units',
+      initialCompletedUnits: initialCompletedUnits === '' ? 0 : Number(initialCompletedUnits)
+    };
+
     if (editingGoal) {
-      updateGoal(editingGoal.id, {
-        title: title.trim(),
-        description: description.trim() || undefined,
-        totalUnits,
-        unitName: unitName.trim() || 'units'
-      });
+      updateGoal(editingGoal.id, payload);
     } else {
-      addGoal({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        totalUnits,
-        unitName: unitName.trim() || 'units'
-      });
+      addGoal(payload);
     }
     setIsModalOpen(false);
   };
@@ -66,7 +67,7 @@ export function GoalsView() {
     const now = new Date();
     
     return goals.map(goal => {
-      let completedUnits = 0;
+      let completedUnits = goal.initialCompletedUnits || 0;
       let weeklyCompletedUnits = 0;
       let weeklyTasksCompleted = 0;
 
@@ -273,6 +274,19 @@ export function GoalsView() {
                     className="w-full bg-[#121214] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-600 outline-none focus:border-gray-600 transition-colors"
                   />
                 </div>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">COMPLETED UNITS (SO FAR)</h3>
+                <input 
+                  type="number" 
+                  min="0"
+                  max={totalUnits}
+                  value={initialCompletedUnits}
+                  onChange={(e) => setInitialCompletedUnits(e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
+                  placeholder="0 (optional)"
+                  className="w-full bg-[#121214] border border-gray-800 rounded-2xl p-4 text-white placeholder:text-gray-600 outline-none focus:border-gray-600 transition-colors"
+                />
               </div>
             </div>
 

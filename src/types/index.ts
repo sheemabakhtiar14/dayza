@@ -13,6 +13,7 @@ export interface Goal {
   totalUnits: number;
   unitName: string; // e.g., "videos", "pages"
   createdAt: string;
+  initialCompletedUnits?: number;
 }
 
 export interface Task {
