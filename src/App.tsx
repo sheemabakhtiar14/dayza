@@ -7,11 +7,12 @@ import React, { useState } from 'react';
 import { Layout } from './components/Layout';
 import { TodayView } from './components/TodayView';
 import { WeekView } from './components/WeekView';
+import { GoalsView } from './components/GoalsView';
 import { AddTaskModal } from './components/AddTaskModal';
 import { DayOfWeek, Task } from './types';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'today' | 'week' | 'focus' | 'profile'>('today');
+  const [activeTab, setActiveTab] = useState<'today' | 'week' | 'goals' | 'profile'>('today');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [initialAddDay, setInitialAddDay] = useState<DayOfWeek>('Monday');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -32,11 +33,7 @@ export default function App() {
     <Layout activeTab={activeTab} onTabChange={setActiveTab}>
       {activeTab === 'today' && <TodayView onAddTask={handleAddTask} onEditTask={handleEditTask} />}
       {activeTab === 'week' && <WeekView onAddTask={handleAddTask} onEditTask={handleEditTask} />}
-      {activeTab === 'focus' && (
-        <div className="p-6 flex items-center justify-center h-full text-gray-500">
-          Focus mode coming soon...
-        </div>
-      )}
+      {activeTab === 'goals' && <GoalsView />}
       {activeTab === 'profile' && (
         <div className="p-6 flex items-center justify-center h-full text-gray-500">
           Profile settings coming soon...

@@ -6,6 +6,15 @@ export interface Subtask {
   completed: boolean;
 }
 
+export interface Goal {
+  id: string;
+  title: string;
+  description?: string;
+  totalUnits: number;
+  unitName: string; // e.g., "videos", "pages"
+  createdAt: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -16,6 +25,8 @@ export interface Task {
   completed: boolean;
   subtasks: Subtask[];
   day: DayOfWeek;
+  goalId?: string;
+  goalUnits?: number;
 }
 
 export interface WeeklySchedule {

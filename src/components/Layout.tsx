@@ -4,8 +4,8 @@ import { cn } from '../lib/utils';
 
 interface LayoutProps {
   children: React.ReactNode;
-  activeTab: 'today' | 'week' | 'focus' | 'profile';
-  onTabChange: (tab: 'today' | 'week' | 'focus' | 'profile') => void;
+  activeTab: 'today' | 'week' | 'goals' | 'profile';
+  onTabChange: (tab: 'today' | 'week' | 'goals' | 'profile') => void;
 }
 
 export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
@@ -30,9 +30,9 @@ export function Layout({ children, activeTab, onTabChange }: LayoutProps) {
         />
         <NavItem 
           icon={<Target size={24} />} 
-          label="FOCUS" 
-          isActive={activeTab === 'focus'} 
-          onClick={() => onTabChange('focus')} 
+          label="GOALS" 
+          isActive={activeTab === 'goals'} 
+          onClick={() => onTabChange('goals')} 
         />
         <NavItem 
           icon={<User size={24} />} 

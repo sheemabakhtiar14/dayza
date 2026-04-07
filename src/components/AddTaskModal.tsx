@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Clock, AlertCircle, Plus, Check } from 'lucide-react';
+import { X, Clock, AlertCircle, Plus, Check, Target } from 'lucide-react';
 import { DayOfWeek, Task, Subtask } from '../types';
 import { useStore } from '../store/useStore';
 import { cn } from '../lib/utils';
@@ -15,6 +15,7 @@ interface AddTaskModalProps {
 export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingTask }: AddTaskModalProps) {
   const addTask = useStore(state => state.addTask);
   const updateTask = useStore(state => state.updateTask);
+  const goals = useStore(state => state.goals);
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -23,6 +24,8 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
   const [day, setDay] = useState<DayOfWeek>(initialDay);
   const [subtasks, setSubtasks] = useState<{ id: string, title: string, completed?: boolean }[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
+  const [goalId, setGoalId] = useState<string>('');
+  const [goalUnits, setGoalUnits] = useState<number>(1);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,6 +36,8 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
         setPriority(existingTask.priority || 'Medium');
         setDay(existingTask.day);
         setSubtasks(existingTask.subtasks || []);
+        setGoalId(existingTask.goalId || '');
+        setGoalUnits(existingTask.goalUnits || 1);
       } else {
         setTitle('');
         setDescription('');
@@ -40,6 +45,8 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
         setPriority('Medium');
         setDay(initialDay);
         setSubtasks([]);
+        setGoalId('');
+        setGoalUnits(1);
       }
       setNewSubtask('');
     }
@@ -65,22 +72,24 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
       finalSubtasks.push({ id: crypto.randomUUID(), title: newSubtask.trim(), completed: false });
     }
     
+    const taskData = {
+      title: title.trim(),
+      description: description.trim() || undefined,
+      duration: duration,
+      priority,
+      day,
+      goalId: goalId || undefined,
+      goalUnits: goalId ? goalUnits : undefined,
+    };
+
     if (existingTask) {
       updateTask(existingTask.id, {
-        title: title.trim(),
-        description: description.trim() || undefined,
-        duration: duration,
-        priority,
-        day,
+        ...taskData,
         subtasks: finalSubtasks.map(st => ({ ...st, completed: st.completed || false }))
       });
     } else {
       addTask({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        duration: duration,
-        priority,
-        day,
+        ...taskData,
         subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
       });
     }
@@ -179,6 +188,37 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
                   </select>
                 </div>
               </div>
+
+              {goals.length > 0 && (
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800">
+                  <Target className="text-fuchsia-400" size={20} />
+                  <div className="flex-1">
+                    <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">LINK TO GOAL</label>
+                    <select 
+                      value={goalId}
+                      onChange={(e) => setGoalId(e.target.value)}
+                      className="w-full bg-transparent text-white outline-none text-sm appearance-none"
+                    >
+                      <option value="" className="bg-gray-900">None</option>
+                      {goals.map(g => (
+                        <option key={g.id} value={g.id} className="bg-gray-900">{g.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {goalId && (
+                    <div className="w-24 border-l border-gray-800 pl-4">
+                      <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">UNITS</label>
+                      <input 
+                        type="number" 
+                        min="1"
+                        value={goalUnits}
+                        onChange={(e) => setGoalUnits(parseInt(e.target.value) || 1)}
+                        className="w-full bg-transparent text-white outline-none text-sm"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
