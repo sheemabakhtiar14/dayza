@@ -26,7 +26,7 @@ export default function App() {
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
-    setInitialAddDay(task.day);
+    setInitialAddDay((task.days && task.days[0]) || task.day);
     setIsAddModalOpen(true);
   };
 

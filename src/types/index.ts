@@ -25,7 +25,7 @@ export interface Task {
   priority?: 'Low' | 'Medium' | 'High';
   completed: boolean;
   subtasks: Subtask[];
-  day: DayOfWeek;
+  days: DayOfWeek[];
   goalId?: string;
   goalUnits?: number;
 }

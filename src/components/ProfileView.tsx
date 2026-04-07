@@ -8,7 +8,7 @@ function calculateProgressForDate(date: Date, allTasks: Task[], completionState:
   const dayName = format(date, 'EEEE') as DayOfWeek;
   const dateString = format(date, 'yyyy-MM-dd');
   
-  const dayTasks = allTasks.filter(t => t.day === dayName);
+  const dayTasks = allTasks.filter(t => (t.days || [t.day]).includes(dayName));
   if (dayTasks.length === 0) return 0;
   
   const totalProgress = dayTasks.reduce((acc, task) => {

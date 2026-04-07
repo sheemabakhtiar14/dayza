@@ -16,7 +16,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
   const tasks = useMemo(() => {
     const dateString = format(currentDate, 'yyyy-MM-dd');
     return allTasks
-      .filter((task) => task.day === currentDayName)
+      .filter((task) => (task.days || [task.day]).includes(currentDayName))
       .map((task) => {
         const taskCompletion = completionState[dateString]?.[task.id];
         return {

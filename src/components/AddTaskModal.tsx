@@ -47,7 +47,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
         setDescription(existingTask.description || '');
         setDuration(existingTask.duration || '30m');
         setPriority(existingTask.priority || 'Medium');
-        setSelectedDays([existingTask.day]);
+        setSelectedDays(existingTask.days || [existingTask.day]);
         setSubtasks(existingTask.subtasks || []);
         setGoalId(existingTask.goalId || '');
         setGoalUnits(existingTask.goalUnits ?? 1);
@@ -98,28 +98,16 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
     if (selectedDays.length === 0) return;
 
     if (existingTask) {
-      const firstDay = selectedDays[0];
       updateTask(existingTask.id, {
         ...taskData,
-        day: firstDay,
+        days: selectedDays,
         subtasks: finalSubtasks.map(st => ({ ...st, completed: st.completed || false }))
       });
-
-      const remainingDays = selectedDays.slice(1);
-      remainingDays.forEach(d => {
-        addTask({
-          ...taskData,
-          day: d,
-          subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
-        });
-      });
     } else {
-      selectedDays.forEach(d => {
-        addTask({
-          ...taskData,
-          day: d,
-          subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
-        });
+      addTask({
+        ...taskData,
+        days: selectedDays,
+        subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
       });
     }
     

@@ -19,7 +19,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
   const tasks = useMemo(() => {
     const dateString = format(selectedDate, 'yyyy-MM-dd');
     return allTasks
-      .filter((task) => task.day === selectedDayName)
+      .filter((task) => (task.days || [task.day]).includes(selectedDayName))
       .map((task) => {
         const taskCompletion = completionState[dateString]?.[task.id];
         return {
