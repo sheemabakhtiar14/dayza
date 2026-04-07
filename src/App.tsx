@@ -8,6 +8,7 @@ import { Layout } from './components/Layout';
 import { TodayView } from './components/TodayView';
 import { WeekView } from './components/WeekView';
 import { GoalsView } from './components/GoalsView';
+import { ProfileView } from './components/ProfileView';
 import { AddTaskModal } from './components/AddTaskModal';
 import { DayOfWeek, Task } from './types';
 
@@ -34,11 +35,7 @@ export default function App() {
       {activeTab === 'today' && <TodayView onAddTask={handleAddTask} onEditTask={handleEditTask} />}
       {activeTab === 'week' && <WeekView onAddTask={handleAddTask} onEditTask={handleEditTask} />}
       {activeTab === 'goals' && <GoalsView />}
-      {activeTab === 'profile' && (
-        <div className="p-6 flex items-center justify-center h-full text-gray-500">
-          Profile settings coming soon...
-        </div>
-      )}
+      {activeTab === 'profile' && <ProfileView />}
 
       <AddTaskModal 
         isOpen={isAddModalOpen} 

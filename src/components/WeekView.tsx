@@ -37,8 +37,15 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
   const toggleSubtaskCompletion = useStore(state => state.toggleSubtaskCompletion);
   const deleteTask = useStore(state => state.deleteTask);
 
-  const completedCount = tasks.filter(t => t.completed).length;
-  const progress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  const totalProgress = tasks.reduce((acc, task) => {
+    if (task.subtasks && task.subtasks.length > 0) {
+      const completedSubtasks = task.subtasks.filter(st => st.completed).length;
+      return acc + (completedSubtasks / task.subtasks.length);
+    }
+    return acc + (task.completed ? 1 : 0);
+  }, 0);
+
+  const progress = tasks.length > 0 ? Math.round((totalProgress / tasks.length) * 100) : 0;
 
   const weekDays = Array.from({ length: 7 }).map((_, i) => {
     const date = addDays(startOfCurrentWeek, i);

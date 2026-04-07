@@ -34,8 +34,15 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
   const toggleSubtaskCompletion = useStore(state => state.toggleSubtaskCompletion);
   const deleteTask = useStore(state => state.deleteTask);
 
-  const completedCount = tasks.filter(t => t.completed).length;
-  const progress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  const totalProgress = tasks.reduce((acc, task) => {
+    if (task.subtasks && task.subtasks.length > 0) {
+      const completedSubtasks = task.subtasks.filter(st => st.completed).length;
+      return acc + (completedSubtasks / task.subtasks.length);
+    }
+    return acc + (task.completed ? 1 : 0);
+  }, 0);
+
+  const progress = tasks.length > 0 ? Math.round((totalProgress / tasks.length) * 100) : 0;
 
   return (
     <div className="p-6">
@@ -51,7 +58,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
       </header>
 
       <div className="mb-8">
-        <h2 className="text-gray-400 text-sm font-medium tracking-widest uppercase mb-1">Today</h2>
+        <h2 className="text-gray-400 text-sm font-medium tracking-widest uppercase mb-1">Today, {format(currentDate, 'MMMM d')}</h2>
         <div className="flex justify-between items-end">
           <h1 className="text-4xl font-bold tracking-tight">{currentDayName}</h1>
           <div className="text-right">

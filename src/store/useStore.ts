@@ -69,6 +69,16 @@ export const useStore = create<AppState>()(
       toggleTaskCompletion: (taskId, date) => set((state) => {
         const dateString = format(date, 'yyyy-MM-dd');
         const currentCompletion = state.completionState[dateString]?.[taskId]?.completed || false;
+        const newCompletion = !currentCompletion;
+        
+        const task = state.tasks.find(t => t.id === taskId);
+        const subtasksUpdate: Record<string, boolean> = {};
+        
+        if (task && task.subtasks) {
+          task.subtasks.forEach(st => {
+            subtasksUpdate[st.id] = newCompletion;
+          });
+        }
         
         return {
           completionState: {
@@ -77,7 +87,11 @@ export const useStore = create<AppState>()(
               ...state.completionState[dateString],
               [taskId]: {
                 ...state.completionState[dateString]?.[taskId],
-                completed: !currentCompletion,
+                completed: newCompletion,
+                subtasks: {
+                  ...state.completionState[dateString]?.[taskId]?.subtasks,
+                  ...subtasksUpdate
+                }
               }
             }
           }
@@ -87,6 +101,21 @@ export const useStore = create<AppState>()(
       toggleSubtaskCompletion: (taskId, subtaskId, date) => set((state) => {
         const dateString = format(date, 'yyyy-MM-dd');
         const currentCompletion = state.completionState[dateString]?.[taskId]?.subtasks?.[subtaskId] || false;
+        const newCompletion = !currentCompletion;
+        
+        const task = state.tasks.find(t => t.id === taskId);
+        
+        const updatedSubtasks = {
+          ...state.completionState[dateString]?.[taskId]?.subtasks,
+          [subtaskId]: newCompletion,
+        };
+        
+        let taskCompleted = state.completionState[dateString]?.[taskId]?.completed || false;
+        
+        if (task && task.subtasks && task.subtasks.length > 0) {
+          const allCompleted = task.subtasks.every(st => updatedSubtasks[st.id]);
+          taskCompleted = allCompleted;
+        }
         
         return {
           completionState: {
@@ -95,10 +124,8 @@ export const useStore = create<AppState>()(
               ...state.completionState[dateString],
               [taskId]: {
                 ...state.completionState[dateString]?.[taskId],
-                subtasks: {
-                  ...state.completionState[dateString]?.[taskId]?.subtasks,
-                  [subtaskId]: !currentCompletion,
-                }
+                completed: taskCompleted,
+                subtasks: updatedSubtasks
               }
             }
           }
