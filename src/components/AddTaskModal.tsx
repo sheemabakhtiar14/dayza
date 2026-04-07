@@ -25,7 +25,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
   const [subtasks, setSubtasks] = useState<{ id: string, title: string, completed?: boolean }[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
   const [goalId, setGoalId] = useState<string>('');
-  const [goalUnits, setGoalUnits] = useState<number>(1);
+  const [goalUnits, setGoalUnits] = useState<number | ''>(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,7 +37,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
         setDay(existingTask.day);
         setSubtasks(existingTask.subtasks || []);
         setGoalId(existingTask.goalId || '');
-        setGoalUnits(existingTask.goalUnits || 1);
+        setGoalUnits(existingTask.goalUnits ?? 0);
       } else {
         setTitle('');
         setDescription('');
@@ -46,7 +46,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
         setDay(initialDay);
         setSubtasks([]);
         setGoalId('');
-        setGoalUnits(1);
+        setGoalUnits(0);
       }
       setNewSubtask('');
     }
@@ -79,7 +79,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
       priority,
       day,
       goalId: goalId || undefined,
-      goalUnits: goalId ? goalUnits : undefined,
+      goalUnits: goalId ? (Number(goalUnits) || 0) : undefined,
     };
 
     if (existingTask) {
@@ -210,9 +210,9 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
                       <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">UNITS</label>
                       <input 
                         type="number" 
-                        min="1"
+                        min="0"
                         value={goalUnits}
-                        onChange={(e) => setGoalUnits(parseInt(e.target.value) || 1)}
+                        onChange={(e) => setGoalUnits(e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
                         className="w-full bg-transparent text-white outline-none text-sm"
                       />
                     </div>

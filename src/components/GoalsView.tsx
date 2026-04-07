@@ -19,7 +19,7 @@ export function GoalsView() {
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [totalUnits, setTotalUnits] = useState(100);
+  const [totalUnits, setTotalUnits] = useState<number | ''>(0);
   const [unitName, setUnitName] = useState('units');
   const [initialCompletedUnits, setInitialCompletedUnits] = useState<number | ''>('');
 
@@ -27,7 +27,7 @@ export function GoalsView() {
     setEditingGoal(null);
     setTitle('');
     setDescription('');
-    setTotalUnits(100);
+    setTotalUnits(0);
     setUnitName('units');
     setInitialCompletedUnits('');
     setIsModalOpen(true);
@@ -49,7 +49,7 @@ export function GoalsView() {
     const payload = {
       title: title.trim(),
       description: description.trim() || undefined,
-      totalUnits,
+      totalUnits: Number(totalUnits) || 0,
       unitName: unitName.trim() || 'units',
       initialCompletedUnits: initialCompletedUnits === '' ? 0 : Number(initialCompletedUnits)
     };
@@ -92,7 +92,9 @@ export function GoalsView() {
         });
       });
 
-      const percentage = Math.min(100, Math.round((completedUnits / goal.totalUnits) * 100)) || 0;
+      const percentage = goal.totalUnits > 0 
+        ? Math.min(100, Math.round((completedUnits / goal.totalUnits) * 100)) 
+        : 0;
 
       return {
         ...goal,
@@ -258,9 +260,9 @@ export function GoalsView() {
                   <h3 className="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">TOTAL UNITS</h3>
                   <input 
                     type="number" 
-                    min="1"
+                    min="0"
                     value={totalUnits}
-                    onChange={(e) => setTotalUnits(parseInt(e.target.value) || 1)}
+                    onChange={(e) => setTotalUnits(e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
                     className="w-full bg-[#121214] border border-gray-800 rounded-2xl p-4 text-white outline-none focus:border-gray-600 transition-colors"
                   />
                 </div>
@@ -293,7 +295,7 @@ export function GoalsView() {
             <div className="p-6 border-t border-gray-800/50 bg-[#09090b]">
               <button 
                 onClick={handleSave}
-                disabled={!title.trim() || totalUnits < 1}
+                disabled={!title.trim() || totalUnits === ''}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 disabled:from-purple-600/50 disabled:to-pink-500/50 disabled:text-white/50 text-white py-4 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
               >
                 <CheckCircle2 size={20} />
