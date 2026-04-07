@@ -112,7 +112,7 @@ export function TodayView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWee
   );
 }
 
-function TaskCard({ task, date, onToggle, onToggleSubtask, onDelete, onEdit }: { task: Task, date: Date, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void, onEdit: () => void }) {
+const TaskCard: React.FC<{ task: Task, date: Date, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void, onEdit: () => void }> = ({ task, date, onToggle, onToggleSubtask, onDelete, onEdit }) => {
   const [expanded, setExpanded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Clock, AlertCircle, Plus, Check, Target } from 'lucide-react';
+import { X, Clock, AlertCircle, Plus, Check, Target, ChevronDown } from 'lucide-react';
 import { DayOfWeek, Task, Subtask } from '../types';
 import { useStore } from '../store/useStore';
 import { cn } from '../lib/utils';
@@ -21,11 +21,24 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('30m');
   const [priority, setPriority] = useState<Task['priority']>('Medium');
-  const [day, setDay] = useState<DayOfWeek | 'Everyday'>(initialDay);
+  const [selectedDays, setSelectedDays] = useState<DayOfWeek[]>([initialDay]);
   const [subtasks, setSubtasks] = useState<{ id: string, title: string, completed?: boolean }[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
   const [goalId, setGoalId] = useState<string>('');
-  const [goalUnits, setGoalUnits] = useState<number | ''>(0);
+  const [goalUnits, setGoalUnits] = useState<number | ''>(1);
+  const [isDayDropdownOpen, setIsDayDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const daysOfWeek: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDayDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -34,21 +47,22 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
         setDescription(existingTask.description || '');
         setDuration(existingTask.duration || '30m');
         setPriority(existingTask.priority || 'Medium');
-        setDay(existingTask.day);
+        setSelectedDays([existingTask.day]);
         setSubtasks(existingTask.subtasks || []);
         setGoalId(existingTask.goalId || '');
-        setGoalUnits(existingTask.goalUnits ?? 0);
+        setGoalUnits(existingTask.goalUnits ?? 1);
       } else {
         setTitle('');
         setDescription('');
         setDuration('30m');
         setPriority('Medium');
-        setDay(initialDay);
+        setSelectedDays([initialDay]);
         setSubtasks([]);
         setGoalId('');
-        setGoalUnits(0);
+        setGoalUnits(1);
       }
       setNewSubtask('');
+      setIsDayDropdownOpen(false);
     }
   }, [isOpen, existingTask, initialDay]);
 
@@ -81,29 +95,32 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
       goalUnits: goalId ? (Number(goalUnits) || 0) : undefined,
     };
 
+    if (selectedDays.length === 0) return;
+
     if (existingTask) {
+      const firstDay = selectedDays[0];
       updateTask(existingTask.id, {
         ...taskData,
-        day: day as DayOfWeek,
+        day: firstDay,
         subtasks: finalSubtasks.map(st => ({ ...st, completed: st.completed || false }))
       });
-    } else {
-      if (day === 'Everyday') {
-        const days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        days.forEach(d => {
-          addTask({
-            ...taskData,
-            day: d,
-            subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
-          });
-        });
-      } else {
+
+      const remainingDays = selectedDays.slice(1);
+      remainingDays.forEach(d => {
         addTask({
           ...taskData,
-          day: day as DayOfWeek,
+          day: d,
           subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
         });
-      }
+      });
+    } else {
+      selectedDays.forEach(d => {
+        addTask({
+          ...taskData,
+          day: d,
+          subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
+        });
+      });
     }
     
     onClose();
@@ -185,20 +202,61 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
                 </div>
               </div>
               
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#121214] border border-gray-800 focus-within:border-gray-600 transition-colors">
                 <CalendarIcon className="text-gray-500" size={20} />
-                <div className="flex-1">
+                <div className="flex-1 relative" ref={dropdownRef}>
                   <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">DAY</label>
-                  <select 
-                    value={day}
-                    onChange={(e) => setDay(e.target.value as DayOfWeek | 'Everyday')}
-                    className="w-full bg-transparent text-white outline-none text-sm appearance-none"
+                  <button 
+                    type="button"
+                    onClick={() => setIsDayDropdownOpen(!isDayDropdownOpen)}
+                    className="w-full bg-transparent text-white outline-none text-sm text-left flex justify-between items-center"
                   >
-                    {!existingTask && <option value="Everyday" className="bg-gray-900">Everyday</option>}
-                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => (
-                      <option key={d} value={d} className="bg-gray-900">{d}</option>
-                    ))}
-                  </select>
+                    <span className="truncate pr-2">
+                      {selectedDays.length === 7 ? 'Everyday' : selectedDays.length > 0 ? selectedDays.join(', ') : 'Select days'}
+                    </span>
+                    <ChevronDown size={14} className="text-gray-500" />
+                  </button>
+
+                  {isDayDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-full bg-[#1a1a1d] border border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden py-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (selectedDays.length === 7) {
+                            setSelectedDays([initialDay]);
+                          } else {
+                            setSelectedDays([...daysOfWeek]);
+                          }
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-800 flex items-center gap-3 transition-colors"
+                      >
+                        <div className={cn("w-4 h-4 rounded border flex items-center justify-center transition-colors", selectedDays.length === 7 ? "bg-fuchsia-500 border-fuchsia-500" : "border-gray-600")}>
+                          {selectedDays.length === 7 && <Check size={10} className="text-white" />}
+                        </div>
+                        Everyday
+                      </button>
+                      <div className="h-px bg-gray-800 my-1 mx-2" />
+                      {daysOfWeek.map(d => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => {
+                            if (selectedDays.includes(d)) {
+                              setSelectedDays(selectedDays.filter(day => day !== d));
+                            } else {
+                              setSelectedDays([...selectedDays, d]);
+                            }
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-800 flex items-center gap-3 transition-colors"
+                        >
+                          <div className={cn("w-4 h-4 rounded border flex items-center justify-center transition-colors", selectedDays.includes(d) ? "bg-fuchsia-500 border-fuchsia-500" : "border-gray-600")}>
+                            {selectedDays.includes(d) && <Check size={10} className="text-white" />}
+                          </div>
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -305,7 +363,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
               className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 disabled:from-purple-600/50 disabled:to-pink-500/50 disabled:text-white/50 text-white py-4 rounded-2xl font-medium transition-colors flex items-center justify-center gap-2"
             >
               <Check size={20} />
-              {existingTask ? 'Save Changes' : `Commit to ${day}`}
+              {existingTask ? 'Save Changes' : `Commit Task`}
             </button>
           </div>
         </Dialog.Content>

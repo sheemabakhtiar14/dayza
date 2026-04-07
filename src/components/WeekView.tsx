@@ -141,7 +141,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
   );
 }
 
-function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete, onEdit }: { task: Task, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void, onEdit: () => void }) {
+const WeekTaskCard: React.FC<{ task: Task, onToggle: () => void, onToggleSubtask: (id: string) => void, onDelete: () => void, onEdit: () => void }> = ({ task, onToggle, onToggleSubtask, onDelete, onEdit }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
