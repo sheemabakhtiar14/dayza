@@ -4,7 +4,7 @@ import { Plus, Check, MoreVertical, Trash2, ChevronDown, ChevronUp, Edit2 } from
 import { useStore } from '../store/useStore';
 import { DayOfWeek, Task } from '../types';
 import { cn } from '../lib/utils';
-import { motion, AnimatePresence } from 'motion/react';
+import * as Dialog from '@radix-ui/react-dialog';
 
 export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek) => void, onEditTask: (task: Task) => void }) {
   const [currentDate] = useState(new Date());
@@ -108,11 +108,9 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
           <span className="text-fuchsia-400 font-bold">{progress}%</span>
         </div>
         <div className="h-2 w-full bg-gray-800/50 rounded-full overflow-hidden">
-          <motion.div 
-            className="h-full bg-gradient-to-r from-purple-600 to-pink-500 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+          <div 
+            className="h-full bg-gradient-to-r from-purple-600 to-pink-500 rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
           />
         </div>
       </div>
@@ -126,7 +124,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
               <p className="text-gray-500 text-sm">No tasks scheduled for {selectedDayName}.</p>
             </div>
           ) : (
-            <AnimatePresence initial={false}>
+            <>
               {tasks.map(task => (
                 <WeekTaskCard 
                   key={task.id} 
@@ -137,7 +135,7 @@ export function WeekView({ onAddTask, onEditTask }: { onAddTask: (day: DayOfWeek
                   onEdit={() => onEditTask(task)}
                 />
               ))}
-            </AnimatePresence>
+            </>
           )}
         </div>
       </div>
@@ -158,11 +156,7 @@ function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete, onEdit }: { t
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
 
   return (
-    <motion.div 
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+    <div 
       className={cn(
         "rounded-2xl p-4 transition-all border relative",
         task.completed 
@@ -257,40 +251,33 @@ function WeekTaskCard({ task, onToggle, onToggleSubtask, onDelete, onEdit }: { t
         </div>
       </div>
 
-      <AnimatePresence>
-        {hasSubtasks && expanded && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-4 pl-10 space-y-3">
-              {task.subtasks.map(subtask => (
-                <div key={subtask.id} className="flex items-start gap-3">
-                  <button 
-                    onClick={() => onToggleSubtask(subtask.id)}
-                    className={cn(
-                      "mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
-                      subtask.completed 
-                        ? "bg-emerald-500 border-emerald-500 text-white" 
-                        : "border-gray-600 text-transparent hover:border-gray-400"
-                    )}
-                  >
-                    <Check size={10} />
-                  </button>
-                  <span className={cn(
-                    "text-sm transition-colors",
-                    subtask.completed ? "text-gray-500 line-through" : "text-gray-300"
-                  )}>
-                    {subtask.title}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      {hasSubtasks && expanded && (
+        <div className="overflow-hidden">
+          <div className="mt-4 pl-10 space-y-3">
+            {task.subtasks.map(subtask => (
+              <div key={subtask.id} className="flex items-start gap-3">
+                <button 
+                  onClick={() => onToggleSubtask(subtask.id)}
+                  className={cn(
+                    "mt-0.5 w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0",
+                    subtask.completed 
+                      ? "bg-emerald-500 border-emerald-500 text-white" 
+                      : "border-gray-600 text-transparent hover:border-gray-400"
+                  )}
+                >
+                  <Check size={10} />
+                </button>
+                <span className={cn(
+                  "text-sm transition-colors",
+                  subtask.completed ? "text-gray-500 line-through" : "text-gray-300"
+                )}>
+                  {subtask.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
