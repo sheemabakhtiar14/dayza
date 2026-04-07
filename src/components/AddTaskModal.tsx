@@ -21,7 +21,7 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('30m');
   const [priority, setPriority] = useState<Task['priority']>('Medium');
-  const [day, setDay] = useState<DayOfWeek>(initialDay);
+  const [day, setDay] = useState<DayOfWeek | 'Everyday'>(initialDay);
   const [subtasks, setSubtasks] = useState<{ id: string, title: string, completed?: boolean }[]>([]);
   const [newSubtask, setNewSubtask] = useState('');
   const [goalId, setGoalId] = useState<string>('');
@@ -77,7 +77,6 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
       description: description.trim() || undefined,
       duration: duration,
       priority,
-      day,
       goalId: goalId || undefined,
       goalUnits: goalId ? (Number(goalUnits) || 0) : undefined,
     };
@@ -85,13 +84,26 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
     if (existingTask) {
       updateTask(existingTask.id, {
         ...taskData,
+        day: day as DayOfWeek,
         subtasks: finalSubtasks.map(st => ({ ...st, completed: st.completed || false }))
       });
     } else {
-      addTask({
-        ...taskData,
-        subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
-      });
+      if (day === 'Everyday') {
+        const days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        days.forEach(d => {
+          addTask({
+            ...taskData,
+            day: d,
+            subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
+          });
+        });
+      } else {
+        addTask({
+          ...taskData,
+          day: day as DayOfWeek,
+          subtasks: finalSubtasks.map(st => ({ ...st, completed: false }))
+        });
+      }
     }
     
     onClose();
@@ -179,9 +191,10 @@ export function AddTaskModal({ isOpen, onClose, initialDay = 'Monday', existingT
                   <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase block mb-1">DAY</label>
                   <select 
                     value={day}
-                    onChange={(e) => setDay(e.target.value as DayOfWeek)}
+                    onChange={(e) => setDay(e.target.value as DayOfWeek | 'Everyday')}
                     className="w-full bg-transparent text-white outline-none text-sm appearance-none"
                   >
+                    {!existingTask && <option value="Everyday" className="bg-gray-900">Everyday</option>}
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => (
                       <option key={d} value={d} className="bg-gray-900">{d}</option>
                     ))}
