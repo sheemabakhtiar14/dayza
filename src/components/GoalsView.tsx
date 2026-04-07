@@ -187,9 +187,6 @@ export function GoalsView() {
                     <span className="text-2xl font-bold text-fuchsia-400">+{goal.weeklyCompletedUnits}</span>
                     <span className="text-sm text-gray-400 mb-1">{goal.unitName}</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {goal.weeklyTasksCompleted} tasks completed
-                  </div>
                 </div>
               </div>
 
